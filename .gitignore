@@ -1,0 +1,19 @@
+# Maven target build folder
+target/
+*.class
+
+# Log files
+*.log
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip
+
+# Antigravity artifacts
+.gemini/

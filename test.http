@@ -1,0 +1,95 @@
+### WardConnect CCMS API Test Suite
+### Base URL: http://localhost:8080/api
+
+###############################################################################
+# 1. PUBLIC ENDPOINTS
+###############################################################################
+
+### 1.1 Get Public Statistics (Landing Page)
+GET http://localhost:8080/api/public/stats
+Accept: application/json
+
+### 1.2 Track Complaint by Tracking ID
+GET http://localhost:8080/api/public/track/CMP-4821
+Accept: application/json
+
+###############################################################################
+# 2. AUTHENTICATION ENDPOINTS
+###############################################################################
+
+### 2.1 Register New Resident
+POST http://localhost:8080/api/auth/resident/register
+Content-Type: application/json
+
+{
+  "name": "Priya Sharma",
+  "email": "priya@example.com",
+  "password": "password123"
+}
+
+### 2.2 Resident Login (Demo Account)
+# @name residentLogin
+POST http://localhost:8080/api/auth/resident/login
+Content-Type: application/json
+
+{
+  "email": "maya@example.com",
+  "password": "demo123"
+}
+
+### 2.3 Admin Login (Demo Account)
+# @name adminLogin
+POST http://localhost:8080/api/auth/admin/login
+Content-Type: application/json
+
+{
+  "email": "admin@ward.com",
+  "password": "admin123"
+}
+
+###############################################################################
+# 3. RESIDENT ENDPOINTS (Requires Resident JWT Token)
+###############################################################################
+
+### 3.1 Create New Complaint
+POST http://localhost:8080/api/complaints
+Content-Type: application/json
+Authorization: Bearer {{residentLogin.response.body.token}}
+
+{
+  "title": "Broken bench in community park",
+  "category": "ROADS",
+  "location": "Central Park, Sector 2",
+  "priority": "HIGH",
+  "description": "The seating bench near the entrance has broken wooden slats and exposed sharp nails."
+}
+
+### 3.2 Get Resident's Own Complaints
+GET http://localhost:8080/api/complaints/my
+Authorization: Bearer {{residentLogin.response.body.token}}
+
+###############################################################################
+# 4. ADMIN ENDPOINTS (Requires Admin JWT Token)
+###############################################################################
+
+### 4.1 Get All Complaints (Filtered by Status and Category)
+GET http://localhost:8080/api/admin/complaints?status=Pending&category=Roads
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### 4.2 Search Complaints (Keyword Search)
+GET http://localhost:8080/api/admin/complaints?q=park
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### 4.3 Update Complaint Status & Response (Replace {complaintId} with actual Mongo ID)
+PUT http://localhost:8080/api/admin/complaints/650000000000000000000001
+Content-Type: application/json
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+{
+  "status": "In Progress",
+  "adminResponse": "Maintenance crew dispatched to fix the park bench."
+}
+
+### 4.4 Get Admin Summary Statistics
+GET http://localhost:8080/api/admin/stats
+Authorization: Bearer {{adminLogin.response.body.token}}
